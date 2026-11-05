@@ -1,0 +1,25 @@
+{
+  "short_name": "Griya Andara",
+  "name": "Paguyuban Griya Andara - Pencatatan Iuran Komplek",
+  "icons": [
+    {
+      "src": "/assets/aistudio/IMG-20261104-WA0005_e17c1c0f.jpg",
+      "type": "image/jpeg",
+      "sizes": "192x192 512x512"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "type": "image/jpeg",
+      "sizes": "180x180"
+    },
+    {
+      "src": "/favicon.png",
+      "type": "image/jpeg",
+      "sizes": "64x64 32x32 24x24 16x16"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#f8faf8",
+  "theme_color": "#536758",
+  "display": "standalone"
+}

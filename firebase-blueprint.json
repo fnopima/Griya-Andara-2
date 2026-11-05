@@ -1,0 +1,114 @@
+{
+  "entities": {
+    "Resident": {
+      "title": "Resident",
+      "description": "Data warga dan unit rumah komplek",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "houseNumber": { "type": "string", "description": "Nomor rumah / Blok (e.g. Blok A1 No. 5)" },
+        "headOfFamily": { "type": "string", "description": "Nama Kepala Keluarga / Penghuni" },
+        "phone": { "type": "string", "description": "Nomor Telepon / WhatsApp" },
+        "residentType": { "type": "string", "enum": ["tetap", "kontrak"] },
+        "occupancyStatus": { "type": "string", "enum": ["dihuni", "kosong"] },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["houseNumber", "headOfFamily"]
+    },
+    "Payment": {
+      "title": "Payment",
+      "description": "Catatan transaksi iuran warga",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "residentId": { "type": "string" },
+        "houseNumber": { "type": "string" },
+        "headOfFamily": { "type": "string" },
+        "periodMonth": { "type": "string", "description": "Bulan & Tahun iuran, misal 2026-09" },
+        "amount": { "type": "number", "description": "Jumlah pembayaran dalam Rupiah" },
+        "feeType": { "type": "string", "description": "Jenis iuran, misal Kebersihan & Keamanan, Kas RT, THR Satpam" },
+        "paymentMethod": { "type": "string", "enum": ["tunai", "transfer"] },
+        "status": { "type": "string", "enum": ["lunas", "pending", "ditolak"] },
+        "paidAt": { "type": "string" },
+        "recordedBy": { "type": "string", "description": "Nama Admin / Bendahara yang mencatat" },
+        "proofUrl": { "type": "string" },
+        "receiptNo": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["houseNumber", "periodMonth", "amount", "status"]
+    },
+    "Expense": {
+      "title": "Expense",
+      "description": "Catatan pengeluaran dana kas komplek",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string", "description": "Judul pengeluaran" },
+        "category": { "type": "string", "description": "Kategori pengeluaran (Gaji Satpam, Kebersihan, Perbaikan Fasilitas, Kegiatan RT, Lainnya)" },
+        "amount": { "type": "number" },
+        "date": { "type": "string" },
+        "recipient": { "type": "string" },
+        "recordedBy": { "type": "string" },
+        "receiptUrl": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["title", "amount", "date", "category"]
+    },
+    "OtherIncome": {
+      "title": "OtherIncome",
+      "description": "Pencatatan pendapatan di luar iuran warga",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string", "description": "Judul pendapatan lain (donasi, sewa fasilitas, dll)" },
+        "category": { "type": "string" },
+        "amount": { "type": "number" },
+        "date": { "type": "string" },
+        "payerName": { "type": "string" },
+        "paymentMethod": { "type": "string" },
+        "recordedBy": { "type": "string" },
+        "receiptNo": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["title", "category", "amount", "date", "payerName"]
+    },
+    "Setting": {
+      "title": "Setting",
+      "description": "Pengaturan informasi komplek dan tarif default",
+      "type": "object",
+      "properties": {
+        "complexName": { "type": "string" },
+        "rtRw": { "type": "string" },
+        "defaultMonthlyFee": { "type": "number" },
+        "adminPin": { "type": "string" },
+        "wargaPassword": { "type": "string", "description": "Password akses masuk untuk warga komplek" },
+        "treasurerName": { "type": "string" },
+        "bankAccount": { "type": "string" },
+        "announcement": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/residents/{residentId}": {
+      "schema": "Resident",
+      "description": "Daftar warga komplek"
+    },
+    "/payments/{paymentId}": {
+      "schema": "Payment",
+      "description": "Daftar pembayaran iuran"
+    },
+    "/expenses/{expenseId}": {
+      "schema": "Expense",
+      "description": "Daftar pengeluaran kas"
+    },
+    "/otherIncomes/{otherIncomeId}": {
+      "schema": "OtherIncome",
+      "description": "Daftar pendapatan lain di luar iuran warga"
+    },
+    "/settings/{settingId}": {
+      "schema": "Setting",
+      "description": "Pengaturan aplikasi komplek"
+    }
+  }
+}
