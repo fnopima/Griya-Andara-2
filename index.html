@@ -26,6 +26,21 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Simpan URL Web App hasil deployment Google Apps Script di sini
+      const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbypThEEA7PWZMAEmxEiiFHXMHZDiFGRajOX_vhlzMf0xVbXzW-3PP5D197vqETSX0jV/exec";
+
+      // Fungsi untuk mengambil data dari Google Sheet
+      async function fetchData() {
+        try {
+          const response = await fetch(SCRIPT_URL);
+          const data = await response.json();
+          console.log("Data dari Google Sheet:", data);
+        } catch (error) {
+        console.error("Gagal mengambil data:", error);
+        }
+      }
+    </script>
   </body>
 </html>
 
