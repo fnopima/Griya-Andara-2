@@ -78,7 +78,6 @@ export interface AppSettings {
   bankAccount: string; // e.g. "123-456-7890"
   bankHolder: string; // e.g. "Kas RT 03 Taman Asri"
   announcement: string;
-  storageProvider?: 'sheets' | 'firestore';
   googleSheetsUrl?: string; // Web App URL (https://script.google.com/macros/s/.../exec)
   googleSheetSpreadsheetUrl?: string; // Direct link to Google Spreadsheet for easy access
 }
@@ -87,13 +86,13 @@ export type ActiveTab = 'dashboard' | 'payments' | 'other_incomes' | 'matrix' | 
 export type UserRole = 'admin' | 'warga';
 
 export interface DatabaseInfo {
-  mode: 'firestore' | 'sheets' | 'local';
+  mode: 'sheets' | 'local';
   isOnline: boolean;
-  firestoreConfigured: boolean;
-  sheetsConfigured?: boolean;
+  sheetsConfigured: boolean;
   sheetUrl?: string;
   lastSyncedAt?: string;
   errorMessage?: string;
+  firestoreConfigured?: boolean;
   isQuotaExceeded?: boolean;
   consoleUrl?: string;
 }

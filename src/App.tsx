@@ -33,8 +33,7 @@ import { LoginGateModal } from './components/LoginGateModal';
 import { SelfReportModal } from './components/SelfReportModal';
 import { NewPaymentModal } from './components/NewPaymentModal';
 import { NewOtherIncomeModal } from './components/NewOtherIncomeModal';
-import { Loader2, AlertTriangle, ExternalLink, X } from 'lucide-react';
-import { firestoreConsoleUrl } from './lib/firebase';
+import { Loader2, FileSpreadsheet, ArrowRight, X } from 'lucide-react';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
@@ -51,11 +50,11 @@ export default function App() {
   const [otherIncomes, setOtherIncomes] = useState<OtherIncome[]>([]);
   const [settings, setSettings] = useState<AppSettings>(DEFAULT_SETTINGS);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isQuotaBannerDismissed, setIsQuotaBannerDismissed] = useState<boolean>(false);
+  const [isSheetsPromptDismissed, setIsSheetsPromptDismissed] = useState<boolean>(false);
   const [dbInfo, setDbInfo] = useState<DatabaseInfo>({
-    mode: 'firestore',
+    mode: 'local',
     isOnline: true,
-    firestoreConfigured: true,
+    sheetsConfigured: false,
   });
 
   // Modals
@@ -67,7 +66,7 @@ export default function App() {
   const [isAdminPinOpen, setIsAdminPinOpen] = useState(false);
   const [receiptPayment, setReceiptPayment] = useState<Payment | null>(null);
 
-  // Initialize unified database engine (Cloud Firestore + LocalStorage fallback)
+  // Initialize database engine (Google Sheets + LocalStorage cache)
   useEffect(() => {
     let isMounted = true;
 
@@ -144,37 +143,37 @@ export default function App() {
         onLogout={handleLogout}
       />
 
-      {/* Quota Exceeded Notification Banner (Only shown if Google Sheets is not active) */}
-      {dbInfo.isQuotaExceeded && dbInfo.mode !== 'sheets' && !isQuotaBannerDismissed && (
-        <div className="bg-amber-500/10 border-b border-amber-300 text-amber-950 px-4 py-3.5 transition-all animate-fadeIn">
+      {/* Google Sheets Setup Prompt Banner (Only shown if Google Sheets is not yet configured and user is Admin) */}
+      {!dbInfo.sheetsConfigured && !settings.googleSheetsUrl && !isSheetsPromptDismissed && userRole === 'admin' && (
+        <div className="bg-emerald-50 border-b border-emerald-200 text-emerald-950 px-4 py-3 transition-all animate-fadeIn">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
             <div className="flex items-start gap-3">
-              <span className="p-1.5 rounded-full bg-amber-200/80 text-amber-800 shrink-0 mt-0.5 sm:mt-0">
-                <AlertTriangle className="w-4 h-4 text-amber-700" />
+              <span className="p-1.5 rounded-full bg-emerald-200/80 text-emerald-800 shrink-0 mt-0.5 sm:mt-0">
+                <FileSpreadsheet className="w-4 h-4 text-emerald-700" />
               </span>
               <div className="space-y-0.5">
-                <p className="font-bold text-amber-950 text-xs sm:text-sm">
-                  Batas Kuota Gratis Firestore Tercapai (Free Daily Read Units)
+                <p className="font-bold text-emerald-950 text-xs sm:text-sm">
+                  Hubungkan Google Sheets sebagai Database Utama
                 </p>
-                <p className="text-amber-900/90 text-xs leading-relaxed max-w-3xl">
-                  Database komplek saat ini aktif dalam <strong>Mode Cache Browser</strong>. Data tetap aman dapat dilihat. Kuota gratis harian Google Cloud Firestore akan otomatis di-reset besok (setiap hari pukul 14:00 WIB / 00:00 PST), atau pemilik database dapat meng-upgrade ke paket Blaze di Firebase Console untuk akses tanpa batas kuota.
+                <p className="text-emerald-900/90 text-xs leading-relaxed max-w-3xl">
+                  Data saat ini tersimpan di browser Anda. Hubungkan URL Web App Google Apps Script di menu Pengaturan agar seluruh catatan iuran dan kas tersimpan permanen di spreadsheet Anda (bebas biaya & tanpa batas kuota).
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
-              <a
-                href={dbInfo.consoleUrl || firestoreConsoleUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-semibold rounded-lg text-xs shadow-2xs transition"
-              >
-                <span>Buka Firebase Console</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
               <button
-                onClick={() => setIsQuotaBannerDismissed(true)}
+                type="button"
+                onClick={() => setCurrentTab('settings')}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 active:bg-emerald-900 text-white font-semibold rounded-lg text-xs shadow-2xs transition cursor-pointer"
+              >
+                <span>Atur Google Sheets</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsSheetsPromptDismissed(true)}
                 title="Tutup pemberitahuan"
-                className="p-1.5 text-amber-800 hover:text-amber-950 hover:bg-amber-200/60 rounded-md transition"
+                className="p-1.5 text-emerald-800 hover:text-emerald-950 hover:bg-emerald-200/60 rounded-md transition cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -185,9 +184,9 @@ export default function App() {
 
       {/* Main Container */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {isLoading && residents.length === 0 && !dbInfo.isQuotaExceeded ? (
+        {isLoading && residents.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 space-y-3">
-            <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+            <Loader2 className="w-8 h-8 text-emerald-600 animate-spin" />
             <p className="text-xs font-medium text-slate-500">
               Memuat database kas komplek...
             </p>

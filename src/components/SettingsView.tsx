@@ -113,7 +113,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({
     setSheetsNotice(null);
     try {
       // First save settings with googleSheetsUrl
-      await updateAppSettings({ ...formData, storageProvider: 'sheets' });
+      await updateAppSettings(formData);
       const res = await migrateAllToGoogleSheets(formData.googleSheetsUrl);
       setSheetsNotice({ type: 'success', message: res.message });
     } catch (err: any) {
@@ -799,38 +799,12 @@ Pengurus & Bendahara ${formData.rtRw}`;
               </div>
             )}
 
-            {/* Mode Provider Selection */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-slate-700">Pilihan Database Aktif:</label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormData((prev) => ({ ...prev, storageProvider: 'sheets' }));
-                  }}
-                  className={`flex items-center justify-center space-x-2 p-2.5 rounded-lg border text-xs font-semibold transition ${
-                    formData.storageProvider === 'sheets'
-                      ? 'bg-emerald-50 border-emerald-500 text-emerald-900 ring-2 ring-emerald-500/20'
-                      : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                  }`}
-                >
-                  <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
-                  <span>Google Sheets</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormData((prev) => ({ ...prev, storageProvider: 'firestore' }));
-                  }}
-                  className={`flex items-center justify-center space-x-2 p-2.5 rounded-lg border text-xs font-semibold transition ${
-                    formData.storageProvider !== 'sheets'
-                      ? 'bg-indigo-50 border-indigo-500 text-indigo-900 ring-2 ring-indigo-500/20'
-                      : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
-                  }`}
-                >
-                  <Database className="w-4 h-4 text-indigo-600" />
-                  <span>Cloud Firestore</span>
-                </button>
+            {/* Google Sheets Information Notice */}
+            <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-lg flex items-start space-x-2.5 text-xs text-emerald-900">
+              <FileSpreadsheet className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+              <div className="leading-relaxed">
+                <span className="font-semibold text-emerald-950">Database Google Sheets: </span>
+                Seluruh data warga, pembayaran iuran, kas pengeluaran, dan pengaturan disimpan langsung ke Google Spreadsheet Anda secara permanen dan bebas dari batas kuota.
               </div>
             </div>
 
@@ -948,47 +922,24 @@ Pengurus & Bendahara ${formData.rtRw}`;
               </div>
             )}
 
-            {dbInfo?.errorMessage && dbInfo?.mode !== 'sheets' && (
-              <div className="p-3.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-start gap-2.5">
-                  <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
-                  <div className="space-y-1">
-                    <p className="font-semibold text-amber-950">Pemberitahuan Status Cloud:</p>
-                    <p className="text-[11px] leading-relaxed break-all">{dbInfo.errorMessage}</p>
-                  </div>
-                </div>
-                {dbInfo.consoleUrl && (
-                  <a
-                    href={dbInfo.consoleUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-medium rounded-lg text-xs shrink-0 shadow-2xs transition"
-                  >
-                    <span>Firebase Console</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                )}
-              </div>
-            )}
-
             <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-2.5">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-600">Mode Penyimpanan:</span>
+                <span className="text-slate-600">Penyimpanan Aktif:</span>
                 <span className="font-semibold text-slate-800 flex items-center gap-1.5">
                   <span
                     className={`w-2 h-2 rounded-full ${
-                      dbInfo?.mode === 'sheets' ? 'bg-emerald-500' : 'bg-indigo-500'
+                      dbInfo?.sheetsConfigured ? 'bg-emerald-500' : 'bg-amber-500'
                     } animate-pulse`}
                   />
-                  {dbInfo?.mode === 'sheets'
+                  {dbInfo?.sheetsConfigured
                     ? 'Google Sheets (Apps Script Web App)'
-                    : 'Cloud Firestore (Real-time)'}
+                    : 'Penyimpanan Lokal Browser (Belum Terhubung)'}
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-600">Batas Biaya (Billing):</span>
+                <span className="text-slate-600">Status Biaya:</span>
                 <span className="font-semibold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded text-[11px]">
-                  {dbInfo?.mode === 'sheets' ? 'Bebas Biaya (Tanpa Limit Kuota)' : 'Bebas Biaya (Rp 0 / Gratis)'}
+                  100% Gratis & Bebas Kuota
                 </span>
               </div>
               <div className="flex items-center justify-between text-xs">

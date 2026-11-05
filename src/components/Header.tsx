@@ -71,7 +71,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const navItems = userRole === 'admin' ? adminNavItems : wargaNavItems;
 
-  const isCloud = dbInfo?.mode === 'firestore';
+  const isSheetsConfigured = Boolean(dbInfo?.sheetsConfigured || settings.googleSheetsUrl);
 
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-xs backdrop-blur-md">
@@ -93,43 +93,37 @@ export const Header: React.FC<HeaderProps> = ({
               <h1 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
                 {settings.complexName || 'Pencatatan Iuran Komplek'}
               </h1>
-              {dbInfo?.mode === 'sheets' ? (
+              {isSheetsConfigured ? (
                 settings.googleSheetSpreadsheetUrl ? (
                   <a
                     href={settings.googleSheetSpreadsheetUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-2xs hover:bg-emerald-100 transition"
-                    title="Database tersambung ke Google Sheets. Klik untuk membuka Spreadsheet."
+                    title="Database tersimpan di Google Sheets. Klik untuk membuka Spreadsheet."
                   >
-                    <FileSpreadsheet className="w-3 h-3 text-emerald-600" />
+                    <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
                     Google Sheets (Aktif)
                   </a>
                 ) : (
                   <span
                     className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-2xs"
-                    title="Database tersambung ke Google Sheets (Bebas limit kuota)"
+                    title="Database tersimpan langsung di Google Sheets"
                   >
-                    <FileSpreadsheet className="w-3 h-3 text-emerald-600" />
+                    <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
                     Google Sheets (Aktif)
                   </span>
                 )
-              ) : dbInfo?.isQuotaExceeded ? (
-                <span
-                  className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-300 shadow-2xs"
-                  title="Batas kuota harian gratis Cloud Firestore tercapai. Data saat ini dimuat dari cache lokal browser."
-                >
-                  <AlertTriangle className="w-3 h-3 text-amber-600" />
-                  Mode Cache (Kuota Firestore Penuh)
-                </span>
               ) : (
-                <span
-                  className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200/90 shadow-2xs"
-                  title="Tersimpan langsung ke Cloud Database Firestore secara realtime dan sinkron otomatis di semua gadget"
+                <button
+                  type="button"
+                  onClick={() => onSelectTab('settings')}
+                  className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-300 shadow-2xs hover:bg-amber-100 transition cursor-pointer"
+                  title="Klik untuk menghubungkan ke Google Sheets"
                 >
-                  <Wifi className="w-3 h-3 text-emerald-600 animate-pulse" />
-                  Cloud Real-time (Semua Gadget)
-                </span>
+                  <FileSpreadsheet className="w-3.5 h-3.5 text-amber-600" />
+                  Google Sheets: Belum Dihubungkan
+                </button>
               )}
             </div>
             <p className="text-xs text-slate-500 font-medium">

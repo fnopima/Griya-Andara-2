@@ -1,5 +1,3 @@
-import { doc, getDoc, setDoc } from 'firebase/firestore';
-import type { Firestore } from 'firebase/firestore';
 import type { Resident, Payment, Expense, OtherIncome, AppSettings } from '../types';
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -15,6 +13,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   bankAccount: '',
   bankHolder: 'Kas RT',
   announcement: '',
+  googleSheetsUrl: '',
+  googleSheetSpreadsheetUrl: '',
 };
 
 // Clean initial data with zero dummy records
@@ -22,16 +22,4 @@ export const INITIAL_RESIDENTS: Omit<Resident, 'id'>[] = [];
 export const INITIAL_PAYMENTS: Omit<Payment, 'id'>[] = [];
 export const INITIAL_EXPENSES: Omit<Expense, 'id'>[] = [];
 export const INITIAL_OTHER_INCOMES: Omit<OtherIncome, 'id'>[] = [];
-
-export async function seedInitialDataIfEmpty(db: Firestore): Promise<void> {
-  try {
-    const settingsSnap = await getDoc(doc(db, 'settings', 'general'));
-    if (!settingsSnap.exists()) {
-      // Ensure clean default settings exists in Firestore
-      await setDoc(doc(db, 'settings', 'general'), DEFAULT_SETTINGS);
-    }
-  } catch (err) {
-    console.warn('Notice while checking settings:', err);
-  }
-}
 
